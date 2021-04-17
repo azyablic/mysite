@@ -1,0 +1,28 @@
+<!DOCTYPE html>
+<html lang="en" dir="ltr">
+<head>
+    <meta charset="utf-8">
+    <title>Title </title></head>
+<body>
+<main>
+    <div align="center">
+        <header><h3>REGISTRATION</h3></header>
+        <form method="post" action="{% url 'registration' %}">
+            {%csrf_token%}
+            {{form.as_p}}
+            <input type="submit" value="SIGN UP">
+        </form>
+        {% if invalid%} <p>This username is already taken! Please choose another one!</p> {% endif %}
+        {% if incorrectPassword%}
+        <p> This password is not strong. Your password should be:</p>
+        <ul>
+            <li>At least 8 characters in length</li>
+            <li>Use of both upper-case and lower-case letters</li>
+            <li>Include one or more numerical digits</li>
+        </ul>
+        {% endif %}
+    </div>
+    <div align="center">Or you can <a href="/login">sign in</a></div>
+</main>
+</body>
+</html>
