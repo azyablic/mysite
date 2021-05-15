@@ -1,0 +1,18 @@
+.dog{
+    opacity: 0.5;
+    height: 300px;
+    width: 300px;
+}
+
+.dog:hover{
+    opacity: 0.8;
+}
+
+.dog:active{
+    opacity: 1;
+}
+
+.boost{
+  height: 300px;
+  width: 250px;
+}

@@ -1,10 +1,8 @@
-from re import match
-from django.shortcuts import render, redirect
+from django.http import HttpResponse
 from django.contrib.auth.models import User
-from django.contrib.auth import authenticate, login, logout
 from rest_framework import generics
 from . import serializers
-from .forms import UserForm
+from .models import MainCycle, Boost
 
 
 class UserList(generics.ListAPIView):
@@ -14,55 +12,53 @@ class UserList(generics.ListAPIView):
 
 class UserDetail(generics.RetrieveAPIView):
     queryset = User.objects.all()
-    serializer_class = serializers.UserSerializer
+    serializer_class = serializers.UserSerializerDetails
 
 
-def index(request):
-    user = User.objects.filter(id=request.user.id)
-    if len(user) > 0:
-        return render(request, 'index.html', {'user': user[0]})
-    else:
-        return render(request, 'login.html', {'invalid': False})
+class CycleList(generics.ListAPIView):
+    queryset = MainCycle.objects.all()
+    serializer_class = serializers.CycleSerializer
 
 
-def user_login(request):
-    if request.method == "POST":
-        username = request.POST["username"]
-        password = request.POST["password"]
-        user = authenticate(request, username=username, password=password)
-        if user is not None:
-            login(request, user)
-            return render(request, 'notebook.html', {'user':user})
-        else:
-            return render(request, 'login.html', {'invalid': True})
-    else:
-        return render(request, 'login.html', {'invalid': False})
+class CycleDetail(generics.RetrieveAPIView):
+    queryset = MainCycle.objects.all()
+    serializer_class = serializers.CycleSerializerDetails
 
 
-def user_logout(request):
-    logout(request)
-    return redirect('login')
+class BoostList(generics.ListAPIView):
+    queryset = Boost.objects.all()
+    serializer_class = serializers.BoostSerializer
 
 
-def user_registration(request):
-    if request.method == "POST":
-        form = UserForm(request.POST)
-        if form.is_valid():
-            if password_is_valid(request.POST['password']):
-                user = form.save()
-                user = authenticate(request, username=request.POST['username'], password=request.POST['password'])
-                login(request, user)
-                return render(request, 'notebook.html', {'user':user})
-            else:
-                return render(request, 'registration.html', {'invalid': False, 'incorrectPassword': True, 'form': form})
-        else:
-            return render(request, 'registration.html', {'invalid': True, 'incorrectPassword': False, 'form': form})
-    else:
-        form = UserForm()
-        return render(request, 'registration.html', {'invalid': False, 'incorrectPassword': False, 'form': form})
+class BoostDetail(generics.RetrieveAPIView):
+    queryset = Boost.objects.all()
+    serializer_class = serializers.BoostSerializerDetails
 
 
-def password_is_valid(password):
-    if len(password) >= 8 and bool(match(f'^(?=.*[0-9])(?=.*[a-z])(?=.*[A-Z])', password)):
-        return True
-    return False
+def callClick(request):
+    mainCycle = MainCycle.objects.filter(user=request.user)[0]
+    mainCycle.Click()
+    mainCycle.save()
+    return HttpResponse(mainCycle.coinsCount)
+
+
+def buyBoost(request):
+    mainCycle = MainCycle.objects.filter(user=request.user)[0]
+    boosts = Boost.objects.filter(mainCycle=mainCycle)
+    if boosts.count() == 0:
+        if mainCycle.coinsCount < 10:
+            return HttpResponse(mainCycle.clickPower)
+        boost = Boost()
+        boost.mainCycle = mainCycle
+        boost.save()
+        boost.Upgrade()
+        mainCycle.save()
+        return HttpResponse(mainCycle.clickPower)
+    boost = boosts[0]
+    if mainCycle.coinsCount < boost.price:
+        return HttpResponse(mainCycle.clickPower)
+    boost.mainCycle = mainCycle
+    boost.Upgrade()
+    mainCycle.save()
+    boost.save()
+    return HttpResponse(mainCycle.clickPower)
