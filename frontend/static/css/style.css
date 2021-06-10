@@ -1,18 +1,55 @@
-.dog{
-    opacity: 0.5;
-    height: 300px;
-    width: 300px;
-}
-
-.dog:hover{
+.dog, .boost {
+    width: 250px;
+    height: 250px;
     opacity: 0.8;
 }
 
-.dog:active{
-    opacity: 1;
+.dog:hover, .boost:hover {
+    opacity: 0.9;
+    transform: scale(1.05);
 }
 
-.boost{
+.dog:active, .boost:active {
+    opacity: 1;
+    transform: scale(1.15);
+}
+
+.boost:disabled {
+    opacity: 0.3;
+}
+
+.boost {
+  height: 150px;
+  width: 150px;
+}
+.boost-wrapper {
+    display: flex;
+    flex-direction: row;
+    flex: 1;
+    flex-wrap: wrap;
+    margin-top: 20px;
+    margin-left: 50px;
+    justify-content: center;
+}
+
+.boost-holder {
+  margin: 5px;
+  width: 200px;
   height: 300px;
-  width: 250px;
+  background: #FDF7C5;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  border-radius: 20px;
+  margin-right: 10px;
+}
+
+.boost-holder.autoBoost {
+    background: #5eb765;
+}
+
+p {
+    margin: 10px 0;
+    font-weight: bold;
 }

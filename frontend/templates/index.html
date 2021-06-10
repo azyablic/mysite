@@ -1,26 +1,28 @@
 {% load static %}
 <!DOCTYPE html>
 <html lang="en" dir="ltr">
-  <head>
-    <script src="{% static 'js/index.js' %}"></script>
-    <link rel="stylesheet" href="{% static 'css/style.css' %}">
-    <meta charset="utf-8">
-    <div>
-      <title >Title </title>
-    </div>
-  </head>
-  <body onload="getUser({{user.id}})">
-     <main>
-
-      <div align='center'>
-        <h3> Welcome, <div id="user">{{user.username}}</div>! </h3>
-        <div class="logout"><a href="/logout">LOGOUT</a></div>
-        <h3> Your click power is <div id="clickPower">{{mainCycle.clickPower}}</div> </h3>
-        <h3>You have <div id="data">{{mainCycle.coinsCount}}</div> coins </h3>
-        <input type="image" class="dog" src="{% static 'images/dog.png' %}" onclick="callClick()" />
-        <input type="image" class="dog boost" src="{% static 'images/boost.png' %}" onclick="buyBoost()" />
-      </div>
-
-    </main>
-  </body>
+    <head>
+        <meta charset="utf-8">
+        <script type="text/javascript">
+            DJANGO_STATIC_URL = '{{ STATIC_URL }}';
+        </script>
+        <script src="{% static 'js/index.js' %}"></script>
+        <link rel="stylesheet" href="{% static 'css/style.css' %}">
+        <title>Title </title>
+    </head>
+    <body onload="getUser({{ user.id }})">
+        {% csrf_token %}
+        <main>
+            <div align="center">
+                <h1> Welcome, <span id="user">{{user.username}}</span>!</h1>
+                <div class="logout"><a href="/logout">LOGOUT</a></div>
+                <h2>Coins: <span id="data">%coins%</span></h2>
+                <h3>Click power: <span id="clickPower">{{mainCycle.clickPower}}</span> coins</h3>
+                <h3>Auto-Click power: <span id="autoClickPower">{{ mainCycle.autoClickPower }}</span> coins/second</h3>
+                <input type="image" class="dog" src="{% static 'images/dog.png' %}" onclick="callClick()">
+                <div class="boost-wrapper" id="boost-wrapper">
+                </div>
+            </div>
+        </main>
+    </body>
 </html>
