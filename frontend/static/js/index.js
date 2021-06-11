@@ -1,3 +1,14 @@
+async function callClick() {
+    let response = await fetch('/click/',{
+    method: 'GET'
+  });
+  let answer = await response.json();
+  document.getElementById("data").innerHTML = answer.coinsCount;
+  if (answer.boosts)
+    render_all_boosts(answer.boosts);
+    check_prices();
+}
+
 async function getUser(id){
     let response = await fetch('/users/' + id, {
         method: 'GET'
@@ -14,19 +25,10 @@ async function getUser(id){
         method: 'GET'
     });
     let boosts = await boostRequest.json();
-    renderAllBoosts(boosts);
-    checkPrices();
+    render_all_boosts(boosts);
+    check_prices();
     set_auto_click();
     set_send_coins_interval();
-}
-
-async function callClick() {
-    const coins_counter = document.getElementById('data')
-    let coins_value = parseInt(coins_counter.innerText)
-    const click_power = document.getElementById('click_power').innerText
-    coins_value += parseInt(click_power)
-    document.getElementById("data").innerHTML = coins_value
-    checkPrices();
 }
 
 function buyBoost(boost_level){
@@ -53,17 +55,17 @@ function buyBoost(boost_level){
         document.getElementById(`boostLevel_${boost_level}`).innerHTML = data['level'];
         document.getElementById(`boostPrice_${boost_level}`).innerHTML = data['price'];
         document.getElementById(`boostPower_${boost_level}`).innerHTML = data['power'];
-        checkPrices();
+        check_prices();
     });
 }
 
-function checkPrices() {
+function check_prices() {
     let coinsCount = parseInt(document.getElementById("data").innerHTML);
     let boosts = document.getElementsByClassName("boost-holder");
     for (let i = 0; i < boosts.length; i++) {
         let button = boosts[i].getElementsByClassName("dog boost")[0];
         if (parseInt(boosts[i].getElementsByClassName("boostPrice")[0].innerHTML) > coinsCount) {
-            button.setAttribute("disabled", "disabled");
+            button.setAttribute("disabled", 'true');
         } else {
             button.removeAttribute("disabled");
         }
@@ -85,15 +87,15 @@ function getCookie(name) {
     return cookieValue;
 }
 
-function renderAllBoosts(boosts) {
+function render_all_boosts(boosts) {
     let parent = document.getElementById('boost-wrapper');
     parent.innerHTML = '';
     boosts.forEach(boost => {
-        renderBoost(parent, boost);
+        render_boost(parent, boost);
     })
 }
 
-function renderBoost(parent, boost) {
+function render_boost(parent, boost) {
     const div = document.createElement('div');
     div.setAttribute('class', 'boost-holder');
     if (boost.boost_type === 0)
@@ -141,7 +143,7 @@ function set_send_coins_interval() {
             }
         }).then(data => {
             console.log('Coins count sended to server')
-            checkPrices()
+            check_prices()
         }).catch(err => console.log(err))
     }, 10000)
 }
